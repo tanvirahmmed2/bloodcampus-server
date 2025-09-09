@@ -32,6 +32,7 @@ const userSchema= new mongoose.Schema({
     },
     lastdoneted:{
         type: Date,
+        default: new Date('2020-01-01')
         
     },
     createdOn:{
