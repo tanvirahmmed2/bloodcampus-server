@@ -13,6 +13,27 @@ const userSchema= new mongoose({
         required: true,
         unique: true
     },
+    bloodgroup:{
+        type: String,
+        required: true,
+
+    },
+    district:{
+        type: String,
+        required: true
+    },
+    phone:{
+        type: String,
+        required: true,
+    },
+    lastdoneted:{
+        type: Date,
+        
+    },
+    createdOn:{
+        type: Date,
+        default: Date.now()
+    }
     
 })
 
