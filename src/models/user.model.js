@@ -35,6 +35,10 @@ const userSchema= new mongoose.Schema({
         default: new Date('2020-01-01')
         
     },
+    isAvailable:{
+        type: Boolean,
+        default: true,
+    },
     createdOn:{
         type: Date,
         default: Date.now()
