@@ -1,3 +1,4 @@
+require('dotenv').config()
 const bcrypt = require("bcryptjs");
 const User = require("../models/user.model");
 
@@ -76,12 +77,12 @@ const Register = async (req, res) => {
     });
   }
 };
-
+//sign in user
 const Login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // 1. Validate input
+    
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -89,7 +90,7 @@ const Login = async (req, res) => {
       });
     }
 
-    // 2. Check if user exists
+   
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({
@@ -98,23 +99,23 @@ const Login = async (req, res) => {
       });
     }
 
-    // 3. Compare password
+    
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({
         success: false,
-        message: "Invalid credentials",
+        message: "Invalid password",
       });
     }
 
-    // 4. Generate JWT
+   
     const token = jwt.sign(
       { id: user._id, email: user.email },
-      process.env.JWT_SECRET || "secret_key", // use env variable in production
-      { expiresIn: "7d" } // token valid for 7 days
+      process.env.JWT_SECRET || "sara", 
+      { expiresIn: "7d" } 
     );
 
-    // 5. Return response without password
+    
     const { password: _, ...userWithoutPassword } = user._doc;
 
     return res.status(200).json({
