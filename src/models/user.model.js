@@ -30,6 +30,10 @@ const userSchema= new mongoose.Schema({
         type: String,
         required: true,
     },
+    dateofbirth:{
+        type: Date,
+        required: true,
+    },
     lastdoneted:{
         type: Date,
         default: new Date('2020-01-01')
