@@ -1,12 +1,11 @@
 const express= require('express')
 const createErr= require('http-errors')
-const { SignUp } = require('../controllers/user.controller')
+const { SignUp, getUser } = require('../controllers/user.controller')
+const User = require('../models/user.model')
 
 const userRouter= express.Router()
 
-userRouter.get('/', (req,res)=>{
-    res.send('server is running')
-})
+userRouter.get('/', getUser)
 
 
 userRouter.post('/signup', SignUp)
