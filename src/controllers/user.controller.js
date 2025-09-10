@@ -1,5 +1,9 @@
 require('dotenv').config()
 const bcrypt = require("bcryptjs");
+const jwt = require('jsonwebtoken')
+
+
+
 const User = require("../models/user.model");
 
 // Get all users (without passwords)
@@ -25,7 +29,7 @@ const Register = async (req, res) => {
   try {
     const { name, email, password, bloodgroup, district, phone, lastdonated, dateofbirth } = req.body;
 
-    
+
     if (!name || !email || !password || !bloodgroup || !district || !phone || !dateofbirth) {
       return res.status(400).json({
         success: false,
@@ -33,7 +37,7 @@ const Register = async (req, res) => {
       });
     }
 
-    
+
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(409).json({
@@ -42,11 +46,11 @@ const Register = async (req, res) => {
       });
     }
 
-    
+
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    
+
     const newUser = new User({
       name,
       email,
@@ -60,7 +64,7 @@ const Register = async (req, res) => {
 
     await newUser.save();
 
-    
+
     const { password: _, ...userWithoutPassword } = newUser._doc;
 
     return res.status(201).json({
@@ -82,7 +86,7 @@ const Login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    
+    // 1. Validate input
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -90,42 +94,58 @@ const Login = async (req, res) => {
       });
     }
 
-   
+    // 2. Check if user exists
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).json({
+      return res.status(401).json({
         success: false,
-        message: "User not found",
+        message: "Invalid email or password",
       });
     }
 
-    
+    // 3. Compare password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({
         success: false,
-        message: "Invalid password",
+        message: "Invalid email or password",
       });
     }
 
-   
+    // 4. Generate JWT with minimal info
     const token = jwt.sign(
       { id: user._id, email: user.email },
-      process.env.JWT_SECRET || "sara", 
-      { expiresIn: "7d" } 
+      process.env.JWT_SECRET || "sara",
+      { expiresIn: "7d" }
     );
+    //svae cookie
+    res.cookie("token", token, {
+      httpOnly: true, // JS cannot access it
+      secure: process.env.NODE_ENV === "production", // only send over HTTPS in production
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
 
-    
-    const { password: _, ...userWithoutPassword } = user._doc;
-
+    // 5. Return structured response
     return res.status(200).json({
       success: true,
       message: "Login successful",
-      token,
-      payload: userWithoutPassword,
+      data: {
+        token,
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          bloodgroup: user.bloodgroup,
+          district: user.district,
+          phone: user.phone,
+          lastdonated: user.lastdonated,
+          dateofbirth: user.dateofbirth,
+        },
+      },
     });
   } catch (error) {
-    console.error("SignIn error:", error);
+    console.error("Login error:", error);
     return res.status(500).json({
       success: false,
       message: "Something went wrong",
@@ -134,8 +154,17 @@ const Login = async (req, res) => {
   }
 };
 
+const Logout= ()=>{
+  res.clearCookie('token').status(200).send({
+    success: true,
+    message: 'logout successfully completed'
+
+  })
+}
+
 module.exports = {
   Register,
   getUser,
-  Login
+  Login,
+  Logout,
 };
