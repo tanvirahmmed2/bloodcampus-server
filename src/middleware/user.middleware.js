@@ -22,6 +22,7 @@ const isLogin = async (req, res, next) => {
         message: "User not found",
       });
     }
+
     req.user = user;
     next();
   } catch (error) {
