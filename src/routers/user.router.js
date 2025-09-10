@@ -4,7 +4,7 @@ const isLogin = require('../middleware/user.middleware')
 
 const userRouter= express.Router()
 
-userRouter.get('/',isLogin, getUser)
+userRouter.get('/', getUser)
 
 
 userRouter.post('/register', Register)

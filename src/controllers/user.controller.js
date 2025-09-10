@@ -10,10 +10,7 @@ const User = require("../models/user.model");
 const getUser = async (req, res) => {
   try {
     const users = await User.find({}, "-password"); // exclude password field
-    return res.status(200).json({
-      success: true,
-      payload: users,
-    });
+    return res.status(200).send(users);
   } catch (error) {
     console.error("GetUser error:", error);
     return res.status(500).json({
