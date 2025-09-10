@@ -1,6 +1,5 @@
 const express= require('express')
-const createErr= require('http-errors')
-const { SignUp, getUser } = require('../controllers/user.controller')
+const { getUser,  Register, Login } = require('../controllers/user.controller')
 const User = require('../models/user.model')
 
 const userRouter= express.Router()
@@ -8,7 +7,8 @@ const userRouter= express.Router()
 userRouter.get('/', getUser)
 
 
-userRouter.post('/signup', SignUp)
+userRouter.post('/register', Register)
+userRouter.post('/login', Login)
 
 
 
