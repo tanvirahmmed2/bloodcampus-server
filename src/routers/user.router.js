@@ -7,9 +7,9 @@ const userRouter= express.Router()
 userRouter.get('/', getUser)
 
 
-userRouter.post('/register', Register)
+userRouter.post('/register',isLogin, Register)
 userRouter.post('/login', Login)
-userRouter.post('/logout', isLogin, Logout)
+userRouter.post('/logout',isLogin, Logout)
 
 
 

@@ -24,7 +24,7 @@ const getUser = async (req, res) => {
 // Sign up new user
 const Register = async (req, res) => {
   try {
-    const { name, email, password, bloodgroup, district, phone, lastdonated, dateofbirth } = req.body;
+    const { name, email, password, bloodgroup, district, phone, lastdonated, dateofbirth, } = req.body;
 
 
     if (!name || !email || !password || !bloodgroup || !district || !phone || !dateofbirth) {
@@ -35,13 +35,14 @@ const Register = async (req, res) => {
     }
 
 
-    const existingUser = await User.findOne({ email });
+    const existingUser = await User.findOne({ email: email });
     if (existingUser) {
       return res.status(409).json({
         success: false,
         message: "Email already registered",
       });
     }
+
 
 
     const salt = await bcrypt.genSalt(10);
@@ -111,30 +112,17 @@ const Login = async (req, res) => {
 
     // 4. Generate JWT with minimal info
     const token = jwt.sign(
-      { id: user._id, email: user.email },
+      { id: user._id, email: user.email },   // ✅ plain object
       process.env.JWT_SECRET || "sara",
-      { expiresIn: "7d" }
+      { expiresIn: "7d" }                    // optional expiry
     );
-    //svae cookie
-    res.cookie("token", token);
+
+    req.header = token
 
     // 5. Return structured response
     return res.status(200).json({
       success: true,
-      message: "Login successful",
-      data: {
-        token,
-        user: {
-          id: user._id,
-          name: user.name,
-          email: user.email,
-          bloodgroup: user.bloodgroup,
-          district: user.district,
-          phone: user.phone,
-          lastdonated: user.lastdonated,
-          dateofbirth: user.dateofbirth,
-        },
-      },
+      token: token
     });
   } catch (error) {
     console.error("Login error:", error);
@@ -146,13 +134,13 @@ const Login = async (req, res) => {
   }
 };
 
-const Logout= ()=>{
-  res.clearCookie('token').status(200).send({
+const Logout = (req, res) => {
+  return res.status(200).json({
     success: true,
-    message: 'logout successfully completed'
+    message: "Logout successfully completed"
+  });
+};
 
-  })
-}
 
 module.exports = {
   Register,
