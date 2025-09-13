@@ -2,9 +2,9 @@
   "name": "bc-server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "api/server.js",
   "scripts": {
-    "start": "nodemon server.js"
+    "start": "nodemon api/server.js"
   },
   "keywords": [],
   "author": "",
