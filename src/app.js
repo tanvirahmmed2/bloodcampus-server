@@ -10,9 +10,9 @@ app.use(express.json());
 
 // CORS
 app.use(cors({
-    origin: 'https://bloodcampus.netlify.app', // frontend URL without trailing slash
+    origin: 'https://bloodcampus.netlify.app', 
     methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true, // only needed if sending cookies
+    credentials: true,
 }));
 
 // Routes
