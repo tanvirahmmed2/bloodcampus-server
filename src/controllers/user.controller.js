@@ -135,10 +135,31 @@ const Login = async (req, res) => {
 };
 
 const Logout = (req, res) => {
-  return res.status(200).send({
-    success: true,
-    message: "Logout successfully completed"
-  });
+  try {
+    const token = req.cookies.user_token
+    if (!token) {
+      return res.status(400).send({
+        success: false,
+        message: "Token not found"
+      });
+    }
+    res.clearCookie("user_token", {
+      httpOnly: true,      // Prevents client-side JS from accessing the cookie
+      secure: false,         // Ensures cookie is sent only over HTTPS
+      sameSite: "lax", //none for https and lax for local host
+      path: "/",
+    })
+    return res.status(200).send({
+      success: true,
+      message: "Logout successfull"
+    });
+  } catch (error) {
+    return res.status(500).send({
+      success: false,
+      message: "Failed to log out",
+      error: error.message
+    });
+  }
 };
 
 
