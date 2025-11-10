@@ -1,24 +1,31 @@
 const jwt = require("jsonwebtoken");
+const User = require("../models/user.model");
 
-const isLogin = (req, res, next) => {
-  const token = req.header("auth-token");
-
-  if (!token) {
-    return res.status(401).json({
-      success: false,
-      message: "Access denied. No token provided.",
-    });
-  }
-
+const isLogin = async (req, res, next) => {
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || "sara");
-    req.user = decoded; // store user info in request
-    next(); // continue to route
+    const token = req.cookies.user_token
+    if (!token) {
+      return res.status(400).send({
+        success: false,
+        message: 'Token not  found'
+      })
+    }
+    const decode = jwt.verify(token)
+    const user = await User.findById(decode.id)
+    if (!user) {
+      return res.status(400).send({
+        success: false,
+        message: 'Invalid user'
+      })
+    }
+    req.header = user
+    next()
   } catch (error) {
-    return res.status(401).json({
+    return res.status(500).send({
       success: false,
-      message: "Invalid or expired token",
-    });
+      message: 'Failed to authenticate user',
+      error: error.message
+    })
   }
 };
 

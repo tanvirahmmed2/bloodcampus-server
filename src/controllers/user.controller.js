@@ -5,15 +5,19 @@ const jwt = require('jsonwebtoken')
 
 
 const User = require("../models/user.model");
+const { JWT_SECRET } = require('../config/secure');
 
 
 const getUser = async (req, res) => {
   try {
-    const users = await User.find({}, "-password"); 
-    return res.status(200).json(users);
+    const users = await User.find({}, "-password");
+    return res.status(200).send({
+      success: true,
+      message: 'successfully fetched data',
+      payload: users
+    });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({
+    return res.status(500).send({
       success: false,
       message: "Something went wrong",
       error: error.message,
@@ -28,7 +32,7 @@ const Register = async (req, res) => {
 
 
     if (!name || !email || !password || !bloodgroup || !district || !phone || !dateofbirth) {
-      return res.status(400).json({
+      return res.status(400).send({
         success: false,
         message: "Please fill all required fields",
       });
@@ -37,7 +41,7 @@ const Register = async (req, res) => {
 
     const existingUser = await User.findOne({ email: email });
     if (existingUser) {
-      return res.status(409).json({
+      return res.status(409).send({
         success: false,
         message: "Email already registered",
       });
@@ -63,12 +67,12 @@ const Register = async (req, res) => {
     await newUser.save();
 
 
-    return res.status(201).json({
+    return res.status(201).send({
       success: true,
       message: "User registered successfully",
     });
   } catch (error) {
-    return res.status(500).json({
+    return res.status(500).send({
       success: false,
       message: "Something went wrong",
       error: error.message,
@@ -82,7 +86,7 @@ const Login = async (req, res) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({
+      return res.status(400).send({
         success: false,
         message: "Please provide email and password",
       });
@@ -90,7 +94,7 @@ const Login = async (req, res) => {
 
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(401).json({
+      return res.status(401).send({
         success: false,
         message: "Invalid email or password",
       });
@@ -98,28 +102,31 @@ const Login = async (req, res) => {
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(401).json({
+      return res.status(401).send({
         success: false,
         message: "Invalid email or password",
       });
     }
 
-    const token = jwt.sign(
-      { id: user._id, email: user.email },   // ✅ plain object
-      process.env.JWT_SECRET || "sara",
-      { expiresIn: "7d" }                    // optional expiry
-    );
+    const payload = { id: user._id, role: user.role, email: user.email };
 
-    req.header = token
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: "1d" });
 
-    // 5. Return structured response
-    return res.status(200).json({
+    const cookieOptions = {
+      httpOnly: true,      // Prevents client-side JS from accessing the cookie
+      secure: false,         // Ensures cookie is sent only over HTTPS
+      sameSite: "lax",     // Required for cross-site cookies (like frontend ↔ backend on different domains)
+      maxAge: 1000 * 60 * 60 * 24,
+    };
+
+    res.cookie("user_token", token, cookieOptions);
+
+    return res.status(200).send({
       success: true,
-      token: token
+      message: 'Log in successfully',
     });
   } catch (error) {
-    console.error("Login error:", error);
-    return res.status(500).json({
+    return res.status(500).send({
       success: false,
       message: "Something went wrong",
       error: error.message,
@@ -128,11 +135,44 @@ const Login = async (req, res) => {
 };
 
 const Logout = (req, res) => {
-  return res.status(200).json({
+  return res.status(200).send({
     success: true,
     message: "Logout successfully completed"
   });
 };
+
+
+const protectedUser = async (req, res) => {
+  try {
+    const token = req.cookies.user_token
+    if (!token) {
+      return res.status(400).send({
+        success: false,
+        message: 'Token not  found'
+      })
+    }
+    const decoded = jwt.verify(token)
+    const user = await User.findById(decoded.id)
+    if (!user) {
+      return res.status(400).send({
+        success: false,
+        message: 'Invalid user'
+      })
+    }
+    return res.status(200).send({
+      success: true,
+      message: 'succsessfully authenticated user',
+      payload: user,
+    })
+  } catch (error) {
+    return res.status(400).send({
+      success: false,
+      message: 'Failed to authenticate user',
+      error: error.message
+    })
+  }
+
+}
 
 
 module.exports = {
@@ -140,4 +180,5 @@ module.exports = {
   getUser,
   Login,
   Logout,
+  protectedUser,
 };

@@ -1,56 +1,69 @@
-const mongoose= require('mongoose')
+const mongoose = require('mongoose')
 
 
 
-const userSchema= new mongoose.Schema({
-    name:{
+const userSchema = new mongoose.Schema({
+    name: {
         type: String,
         required: true,
         trim: true,
     },
-    password:{
+    password: {
         type: String,
         required: true
     },
-    email:{
+    email: {
         type: String,
         required: true,
         unique: true
     },
-    bloodgroup:{
+    bloodgroup: {
         type: String,
         required: true,
 
     },
-    district:{
+    district: {
         type: String,
         required: true
     },
-    phone:{
+    phone: {
         type: String,
         required: true,
     },
-    dateofbirth:{
+    dateofbirth: {
         type: Date,
         required: true,
     },
-    lastdoneted:{
+    lastdoneted: {
         type: Date,
         default: new Date('2020-01-01')
-        
+
     },
-    isAvailable:{
+    isAvailable: {
         type: Boolean,
         default: true,
     },
-    createdOn:{
+    isBanned: {
+        type: Boolean,
+        default: false,
+    },
+    role: {
+        type: String,
+        trim: true,
+        enum: ['admin, member']
+    },
+    totalDonated: {
+        type: Number,
+        default: 0
+    },
+    createdOn: {
         type: Date,
         default: Date.now()
     }
-    
+
 })
 
 
-const User= mongoose.model('users',userSchema)
+const User = mongoose.model('users', userSchema)
 
-module.exports= User
+module.exports = User
