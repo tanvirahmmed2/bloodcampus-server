@@ -10,8 +10,7 @@ app.use(express.json());
 
 // CORS
 app.use(cors({
-    origin: 'https://bloodcampus.netlify.app', 
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: ['https://bloodcampus.netlify.app', ' http://localhost:3000'],
     credentials: true,
 }));
 
