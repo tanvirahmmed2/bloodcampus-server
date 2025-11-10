@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/user.model");
+const { JWT_SECRET } = require("../config/secure");
 
 const isLogin = async (req, res, next) => {
   try {
@@ -10,7 +11,7 @@ const isLogin = async (req, res, next) => {
         message: 'Token not  found'
       })
     }
-    const decode = jwt.verify(token)
+    const decode = jwt.verify(token, JWT_SECRET)
     const user = await User.findById(decode.id)
     if (!user) {
       return res.status(400).send({

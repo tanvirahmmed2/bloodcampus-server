@@ -172,7 +172,7 @@ const protectedUser = async (req, res) => {
         message: 'Token not  found'
       })
     }
-    const decoded = jwt.verify(token)
+    const decoded = jwt.verify(token, JWT_SECRET)
     const user = await User.findById(decoded.id)
     if (!user) {
       return res.status(400).send({
@@ -186,7 +186,7 @@ const protectedUser = async (req, res) => {
       payload: user,
     })
   } catch (error) {
-    return res.status(400).send({
+    return res.status(500).send({
       success: false,
       message: 'Failed to authenticate user',
       error: error.message
