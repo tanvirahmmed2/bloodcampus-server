@@ -14,7 +14,7 @@ app.use(cors({
 }));
 
 app.get('/', (req, res) => {
-    res.status(200).sned({ success: true, message: 'API is healthy' });
+    res.status(200).send({ success: true, message: 'API is healthy' });
 });
 
 
