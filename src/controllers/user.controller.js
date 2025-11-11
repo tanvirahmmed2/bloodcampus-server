@@ -28,10 +28,10 @@ const getUser = async (req, res) => {
 
 const Register = async (req, res) => {
   try {
-    const { name, email, password, bloodgroup, district, phone, lastdonated, dateofbirth, } = req.body;
+    const { name, email, password, bloodgroup, district, phone, nid, dateofbirth, } = req.body;
 
 
-    if (!name || !email || !password || !bloodgroup || !district || !phone || !dateofbirth) {
+    if (!name || !email || !password || !bloodgroup || !district || !phone || !dateofbirth || !nid) {
       return res.status(400).send({
         success: false,
         message: "Please fill all required fields",
@@ -60,7 +60,7 @@ const Register = async (req, res) => {
       bloodgroup,
       district,
       phone,
-      lastdonated,
+      nid,
       dateofbirth,
     });
 

@@ -34,6 +34,12 @@ const userSchema = new mongoose.Schema({
         type: Date,
         required: true,
     },
+    nid: {
+
+        type: String,
+        required: true,
+        unique: true
+    },
     lastdoneted: {
         type: Date,
         default: new Date('2020-01-01')
@@ -56,6 +62,14 @@ const userSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    messages: [
+        {
+            name: { type: String, trim: true, required: true },
+            number: { type: String, trim: true, required: true },
+            district: { type: String, trim: true, required: true },
+            message: { type: String, trim: true, required: true },
+        }
+    ],
     createdOn: {
         type: Date,
         default: Date.now()
