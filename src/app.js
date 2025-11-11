@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser')
 const userRouter = require('./routers/user.router');
+const messageRouter = require('./routers/message.router');
 
 const app = express();
 
@@ -20,5 +21,7 @@ app.get('/', (req, res) => {
 
 
 app.use('/api/user', userRouter);
+app.use('/api/message', messageRouter);
+
 
 module.exports = app;

@@ -30,4 +30,15 @@ const isLogin = async (req, res, next) => {
   }
 };
 
-module.exports = isLogin;
+const isAdmin=async (req,res,next) => {
+  try {
+    
+  } catch (error) {
+    
+  }
+  
+}
+
+module.exports = {
+  isLogin, isAdmin
+};
