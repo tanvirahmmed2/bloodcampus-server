@@ -276,11 +276,55 @@ const changeAvailabilty = async (req, res) => {
 };
 
 
+const changePassword = async (req, res) => {
+  try {
+    const { oldpass, newpass, id } = req.body
+    if (!oldpass || !newpass || !id) {
+      return res.status(400).send({
+        success: false,
+        message: 'All fields are required'
+      });
+    }
+    const user = await User.findById(id)
+    const passwordMatch = await bcrypt.compare(oldpass, user.password)
+    if (!passwordMatch) {
+      return res.status(400).send({
+        success: false,
+        message: 'Old password didnot matched'
+      });
+    }
+    if (oldpass === newpass) {
+      return res.status(400).send({
+        success: false,
+        message: "New password can't be same as old "
+      });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newpass, salt);
+    user.password = hashedPassword
+    await user.save()
+    return res.status(200).send({
+      success: true,
+      message: 'successsfully changed password'
+    });
+
+
+  } catch (error) {
+    return res.status(500).send({
+      success: false,
+      message: 'Failed to changed password'
+    });
+  }
+
+}
+
 module.exports = {
   Register,
   getUser,
   Login,
   Logout,
   protectedUser,
-  changeAvailabilty
+  changeAvailabilty,
+  changePassword
 };
