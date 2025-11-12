@@ -26,6 +26,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    upazilla: {
+        type: String,
+        required: true
+    },
     phone: {
         type: String,
         required: true,
@@ -37,7 +41,6 @@ const userSchema = new mongoose.Schema({
     nid: {
 
         type: String,
-        required: true,
         unique: true
     },
     lastdoneted: {

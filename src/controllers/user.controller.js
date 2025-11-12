@@ -28,10 +28,10 @@ const getUser = async (req, res) => {
 
 const Register = async (req, res) => {
   try {
-    const { name, email, password, bloodgroup, district, phone, nid, dateofbirth, } = req.body;
+    const { name, email, password, bloodgroup, district, phone, upazilla, dateofbirth } = req.body;
 
 
-    if (!name || !email || !password || !bloodgroup || !district || !phone || !dateofbirth || !nid) {
+    if (!name || !email || !password || !bloodgroup || !district || !phone || !dateofbirth || !upazilla) {
       return res.status(400).send({
         success: false,
         message: "Please fill all required fields",
@@ -47,7 +47,17 @@ const Register = async (req, res) => {
       });
     }
 
+    const dob = new Date(dateofbirth);
+    const today = new Date();
+    const diffMs = today - dob;
+    const age = Math.floor(diffMs / (1000 * 60 * 60 * 24 * 365.25));
 
+    let isAvailable 
+    if(age>=18){
+      isAvailable=true
+    }else{
+      isAvailable=false
+    }
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -60,8 +70,9 @@ const Register = async (req, res) => {
       bloodgroup,
       district,
       phone,
-      nid,
+      upazilla,
       dateofbirth,
+      isAvailable
     });
 
     await newUser.save();
