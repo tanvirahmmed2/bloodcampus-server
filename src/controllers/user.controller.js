@@ -10,7 +10,7 @@ const { JWT_SECRET } = require('../config/secure');
 
 const getUser = async (req, res) => {
   try {
-    const users = await User.find({}, "-password");
+    const users = (await User.find({}, "-password"))
     return res.status(200).send({
       success: true,
       message: 'successfully fetched data',
