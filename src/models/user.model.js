@@ -70,6 +70,14 @@ const userSchema = new mongoose.Schema({
             message: { type: String, trim: true, required: true },
         }
     ],
+    resetToken: {
+        type: String,
+        trim: true
+    },
+    tokenExpireAt: {
+        type: Date,
+        trim: true,
+    },
     createdOn: {
         type: Date,
         default: Date.now()
