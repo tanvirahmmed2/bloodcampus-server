@@ -217,29 +217,64 @@ const protectedUser = async (req, res) => {
 
 const changeAvailabilty = async (req, res) => {
   try {
-    const { id } = req.body
+    const { id } = req.body;
+
     if (!id) {
       return res.status(400).send({
         success: false,
         message: 'Id not found'
-      })
+      });
     }
-    const user = await User.findById(id)
+
+    const user = await User.findById(id);
     if (!user) {
       return res.status(400).send({
         success: false,
         message: 'User not found'
-      })
+      });
     }
-    
-  } catch (error) {
-    res.status(500).send({
-      success: false,
-      message: "Failed to change availability"
-    })
-  }
 
-}
+    // If user is currently available, make them unavailable
+    if (user.isAvailable) {
+      user.isAvailable = false;
+      await user.save();
+
+      return res.status(200).send({
+        success: true,
+        message: 'User is unavailable to donate blood for now'
+      });
+    }
+
+    // Check age before making user available
+    const dob = new Date(user.dateofbirth);
+    const today = new Date();
+    const age = Math.floor((today - dob) / (1000 * 60 * 60 * 24 * 365.25));
+
+    if (age < 18) {
+      return res.status(409).send({
+        success: false,
+        message: 'User must be at least 18 years old'
+      });
+    }
+
+    // Make user available
+    user.isAvailable = true;
+    await user.save();
+
+    return res.status(200).send({
+      success: true,
+      message: 'User is available to donate blood now'
+    });
+
+  } catch (error) {
+    console.error(error); // For debugging
+    return res.status(500).send({
+      success: false,
+      message: 'Failed to change availability'
+    });
+  }
+};
+
 
 module.exports = {
   Register,
