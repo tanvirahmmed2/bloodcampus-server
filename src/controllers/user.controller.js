@@ -215,10 +215,37 @@ const protectedUser = async (req, res) => {
 }
 
 
+const changeAvailabilty = async (req, res) => {
+  try {
+    const { id } = req.body
+    if (!id) {
+      return res.status(400).send({
+        success: false,
+        message: 'Id not found'
+      })
+    }
+    const user = await User.findById(id)
+    if (!user) {
+      return res.status(400).send({
+        success: false,
+        message: 'User not found'
+      })
+    }
+    
+  } catch (error) {
+    res.status(500).send({
+      success: false,
+      message: "Failed to change availability"
+    })
+  }
+
+}
+
 module.exports = {
   Register,
   getUser,
   Login,
   Logout,
   protectedUser,
+  changeAvailabilty
 };
