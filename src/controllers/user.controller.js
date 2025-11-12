@@ -52,11 +52,19 @@ const Register = async (req, res) => {
     const diffMs = today - dob;
     const age = Math.floor(diffMs / (1000 * 60 * 60 * 24 * 365.25));
 
-    let isAvailable 
-    if(age>=18){
-      isAvailable=true
-    }else{
-      isAvailable=false
+    if (age < 15) {
+      return res.status(409).send({
+        success: false,
+        message: "User must be atleast 15 years old",
+      });
+    }
+
+    let isAvailable
+    if (age >= 18) {
+      isAvailable = true
+    }
+    else {
+      isAvailable = false
     }
 
     const salt = await bcrypt.genSalt(10);
