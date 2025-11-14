@@ -128,6 +128,12 @@ const Login = async (req, res) => {
         message: "Invalid email or password",
       });
     }
+    if (user.isBanned) {
+      return res.status(401).send({
+        success: false,
+        message: "You're banned, please contact authority",
+      });
+    }
 
     const payload = { id: user._id, role: user.role, email: user.email };
 
@@ -217,13 +223,37 @@ const protectedUser = async (req, res) => {
 }
 
 
-const updateProfile=async (req,res) => {
+const updateProfile = async (req, res) => {
   try {
-    
+    const { id, name, email, phone, district, upazilla, lastdoneted } = req.body
+    const user = await User.findById(id)
+    if (!user) {
+      return res.status(400).send({
+        success: false,
+        message: 'User not found'
+      })
+    }
+
+    user.name = name
+    user.email = email
+    user.phone = phone,
+      user.district = district,
+      user.upazilla = upazilla,
+      user.lastdoneted = lastdoneted
+    await user.save()
+    return res.status(200).send({
+      success: true,
+      message: 'Successfully updated profile'
+    });
+
   } catch (error) {
-    
+    return res.status(500).send({
+      success: false,
+      message: 'Failed to update profile',
+      error: error.message
+    })
   }
-  
+
 }
 
 
@@ -435,6 +465,41 @@ const deleteRequest = async (req, res) => {
 }
 
 
+const getFilteredData = async (req, res) => {
+  try {
+    const { searchBloodgroup, searchDistrict, searchUpazilla } = req.query
+    const filter = {}
+
+    if (searchBloodgroup) filter.bloodgroup = searchBloodgroup
+    if (searchDistrict) filter.district = searchDistrict
+    if (searchUpazilla) filter.upazilla = searchUpazilla
+
+    const donors = await User.find(filter)
+
+    if (!donors || donors === null) {
+      return res.status(400).send({
+        success: false,
+        message: 'No donor found',
+        payload: null
+      })
+    }
+    return res.status(200).send({
+      success: true,
+      message: `Found ${donors.length} donor`,
+      payload: donors
+    })
+  } catch (error) {
+    return res.status(400).send({
+      success: false,
+      message: 'No donor found',
+      error: error.message
+    })
+  }
+
+}
+
+
+
 module.exports = {
   Register,
   getUser,
@@ -445,5 +510,6 @@ module.exports = {
   changePassword,
   requestDonor,
   deleteRequest,
-  updateProfile
+  updateProfile,
+  getFilteredData
 };
