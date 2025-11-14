@@ -392,16 +392,36 @@ const requestDonor = async (req, res) => {
 }
 
 
-const deleteRequest=async (req,res) => {
+const deleteRequest = async (req, res) => {
   try {
-    
+    const { userId, requestId } = req.body
+    if (!userId || !requestId) {
+      return res.status(400).send({
+        success: false,
+        message: 'All fields are required'
+      });
+    }
+
+    const user = await User.findById(userId)
+    if (!user) {
+      return res.status(400).send({
+        success: false,
+        message: 'User not found'
+      });
+    }
+    await User.findByIdAndUpdate(userId, { $pull: { requests: { _id: requestId } } }, { new: true })
+    res.status(200).send({
+      success: true,
+      message: 'Removed request'
+    })
+
   } catch (error) {
-    return res.status(400).send({ 
-                success: false,
-                message: 'Failed to delete request, try again' 
-            });
+    return res.status(500).send({
+      success: false,
+      message: 'Failed to delete request, try again'
+    });
   }
-  
+
 }
 
 

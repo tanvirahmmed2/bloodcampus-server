@@ -17,7 +17,7 @@ userRouter.get('/protected',isLogin, protectedUser)
 userRouter.post('/changeavailability', isLogin, changeAvailabilty)
 userRouter.post('/changepassword', isLogin, changePassword)
 userRouter.post('/request', isLogin, requestDonor)
-userRouter.delete('/deleterequest', isLogin, deleteRequest)
+userRouter.post('/deleterequest',  deleteRequest)
 
 
 
