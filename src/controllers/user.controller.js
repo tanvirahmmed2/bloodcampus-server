@@ -396,7 +396,10 @@ const deleteRequest=async (req,res) => {
   try {
     
   } catch (error) {
-    
+    return res.status(400).send({ 
+                success: false,
+                message: 'Failed to delete request, try again' 
+            });
   }
   
 }
