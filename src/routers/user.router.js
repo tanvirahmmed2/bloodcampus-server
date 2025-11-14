@@ -1,5 +1,5 @@
 const express= require('express')
-const { getUser,  Register, Login, Logout, protectedUser, changeAvailabilty, changePassword, requestDonor, deleteRequest, updateProfile, getFilteredData, banuser, newaccess, removeaccess } = require('../controllers/user.controller')
+const { getUser,  Register, Login, Logout, protectedUser, changeAvailabilty, changePassword, requestDonor, deleteRequest, updateProfile, getFilteredData, banuser, newaccess, removeaccess, deleteUser } = require('../controllers/user.controller')
 const {isLogin, isAdmin} = require('../middleware/user.middleware')
 
 const userRouter= express.Router()
@@ -25,6 +25,7 @@ userRouter.post('/deleterequest',isLogin,  deleteRequest)
 userRouter.post('/newaccess',isLogin, isAdmin, newaccess)
 userRouter.post('/removeaccess', isLogin, isAdmin, removeaccess)
 userRouter.post('/banuser',isLogin, isAdmin, banuser)
+userRouter.post('/deleteuser', isLogin, isAdmin, deleteUser)
 
 
 

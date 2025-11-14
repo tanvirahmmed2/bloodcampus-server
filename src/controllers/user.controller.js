@@ -622,7 +622,7 @@ const removeaccess = async (req, res) => {
 }
 
 
-const deletedUser = async (req, res) => {
+const deleteUser = async (req, res) => {
   try {
     const { deleteUserEmail } = req.body
     if (!deleteUserEmail) {
@@ -631,7 +631,7 @@ const deletedUser = async (req, res) => {
         message: 'Email not found'
       });
     }
-    const user = await User.findOne({ emai: deleteUserEmail })
+    const user = await User.findOne({ email: deleteUserEmail })
     if (!user) {
       return res.status(400).send({
         success: false,
@@ -673,5 +673,6 @@ module.exports = {
   getFilteredData,
   banuser,
   newaccess,
-  removeaccess
+  removeaccess,
+  deleteUser
 };
