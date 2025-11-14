@@ -321,13 +321,45 @@ const changePassword = async (req, res) => {
 
 
 
-const requestDonor=async (req,res) => {
+const requestDonor = async (req, res) => {
   try {
+    const { donorId, userId } = req.body
+    if (!donorId || !userId) {
+      return res.status(400).send({
+        success: false,
+        message: ' Enough resource not found'
+      })
+    }
+    const user = await User.findById(userId)
+    if (!user) {
+      return res.status(400).send({
+        success: false,
+        message: ' User not found'
+      })
+    }
+    const donor = await User.findById(donorId)
+    if (!donor) {
+      return res.status(400).send({
+        success: false,
+        message: 'Donor not found'
+      })
+    }
+    if (donor.bloodgroup !== user.bloodgroup) {
+      return res.status(400).send({
+        success: false,
+        message: 'Blood group not matched'
+      })
+    }
     
+
   } catch (error) {
-    
+    return res.status(500).send({
+      success: false,
+      message: 'Failed send request',
+      error: error.message
+    })
   }
-  
+
 }
 module.exports = {
   Register,
