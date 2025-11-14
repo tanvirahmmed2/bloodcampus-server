@@ -474,7 +474,7 @@ const getFilteredData = async (req, res) => {
     if (searchDistrict) filter.district = searchDistrict
     if (searchUpazilla) filter.upazilla = searchUpazilla
 
-    const donors = await User.find(filter).sort({_id:-1})
+    const donors = await User.find(filter).sort({ _id: -1 })
 
     if (!donors || donors === null) {
       return res.status(400).send({
@@ -498,32 +498,127 @@ const getFilteredData = async (req, res) => {
 
 }
 
-const banuser=async (req,res) => {
+const banuser = async (req, res) => {
   try {
-    
+    const { banUserEmail } = req.body
+    if (!banUserEmail) {
+      return res.status(400).send({
+        success: false,
+        message: 'user email not found'
+      });
+    }
+    const user = await User.findOne({ email: banUserEmail })
+    if (!user) {
+      return res.status(400).send({
+        success: false,
+        message: 'User not found'
+      });
+    }
+    if (user.isAdmin) {
+      return res.status(400).send({
+        success: false,
+        message: 'Admin account can not be banned'
+      });
+    }
+    if (user.isBanned) {
+      user.isBanned = false
+      await user.save()
+      return res.status(200).send({
+        success: true,
+        message: 'Successfully unbanned user'
+      });
+    }
+    user.isBanned = true
+    await user.save()
+    return res.status(200).send({
+      success: true,
+      message: 'Successfully banned user'
+    });
+
+
   } catch (error) {
-    
+    return res.status(500).send({
+      success: false,
+      message: 'Failed to ban/unban user'
+    })
   }
-  
+
 }
 
 
-const newaccess=async (req,res) => {
+const newaccess = async (req, res) => {
   try {
-    
+    const { newAdminEmail } = req.body
+    if (!newAdminEmail) {
+      return res.status(400).send({
+        success: false,
+        message: 'Email not found'
+      })
+    }
+    const user = await User.findOne({ email: newAdminEmail })
+    if (!user) {
+      return res.status(400).send({
+        success: false,
+        message: 'Invalid email'
+      })
+    }
+    if (user.isBanned) {
+      return res.status(400).send({
+        success: false,
+        message: 'User is banned'
+      });
+    }
+    user.isAdmin = true
+    await user.save()
+    return res.status(200).send({
+      success: true,
+      message: 'Successfully added new admin'
+    })
   } catch (error) {
-    
+    return res.status(500).send({
+      success: false,
+      message: 'Failed to add new admin'
+    })
   }
-  
+
 }
 
-const removeaccess=async (req,res) => {
+const removeaccess = async (req, res) => {
   try {
-    
+    const { id } = req.body
+    if (!id) {
+      return res.status(400).send({
+        success: false,
+        message: 'Admin id not found'
+      })
+    }
+    const user = await User.findById(id)
+    if (!user) {
+      return res.status(500).send({
+        success: false,
+        message: 'Invalid user'
+      })
+    }
+    const admins = await User.find({ isAdmin: true })
+    if (admins.length === 1) {
+      return res.status(400).send({
+        success: false,
+        message: 'Should be at least one admin'
+      })
+    }
+    user.isAdmin = false
+    await user.save()
+    return res.status(200).send({
+      success: true,
+      message: 'Successfully removed admin'
+    })
   } catch (error) {
-    
+    return res.status(500).send({
+      success: false,
+      message: 'Failed to remove admin'
+    })
   }
-  
+
 }
 
 module.exports = {

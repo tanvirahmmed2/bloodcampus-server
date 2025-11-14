@@ -47,12 +47,15 @@ const isAdmin = async (req, res, next) => {
         message: 'Invalid user'
       })
     }
-    if (user.role !== 'admin') {
+    if (!user.isAdmin) {
       return res.status(400).send({
         success: false,
         message: 'Only admin accessable'
       })
     }
+    req.header = user
+    next()
+    
   } catch (error) {
     return res.status(500).send({
       success: false,
