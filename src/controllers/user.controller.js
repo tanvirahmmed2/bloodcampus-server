@@ -217,6 +217,16 @@ const protectedUser = async (req, res) => {
 }
 
 
+const updateProfile=async (req,res) => {
+  try {
+    
+  } catch (error) {
+    
+  }
+  
+}
+
+
 const changeAvailabilty = async (req, res) => {
   try {
     const { id } = req.body;
@@ -434,5 +444,6 @@ module.exports = {
   changeAvailabilty,
   changePassword,
   requestDonor,
-  deleteRequest
+  deleteRequest,
+  updateProfile
 };
