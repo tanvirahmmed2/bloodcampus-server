@@ -65,7 +65,7 @@ const userSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    messages: [
+    requests: [
         {
             name: { type: String, trim: true, required: true },
             number: { type: String, trim: true, required: true },
