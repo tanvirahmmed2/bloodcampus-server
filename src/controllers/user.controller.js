@@ -474,7 +474,7 @@ const getFilteredData = async (req, res) => {
     if (searchDistrict) filter.district = searchDistrict
     if (searchUpazilla) filter.upazilla = searchUpazilla
 
-    const donors = await User.find(filter)
+    const donors = await User.find(filter).sort({_id:-1})
 
     if (!donors || donors === null) {
       return res.status(400).send({
@@ -498,7 +498,33 @@ const getFilteredData = async (req, res) => {
 
 }
 
+const banuser=async (req,res) => {
+  try {
+    
+  } catch (error) {
+    
+  }
+  
+}
 
+
+const newaccess=async (req,res) => {
+  try {
+    
+  } catch (error) {
+    
+  }
+  
+}
+
+const removeaccess=async (req,res) => {
+  try {
+    
+  } catch (error) {
+    
+  }
+  
+}
 
 module.exports = {
   Register,
@@ -511,5 +537,8 @@ module.exports = {
   requestDonor,
   deleteRequest,
   updateProfile,
-  getFilteredData
+  getFilteredData,
+  banuser,
+  newaccess,
+  removeaccess
 };
