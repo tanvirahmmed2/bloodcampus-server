@@ -38,14 +38,9 @@ const userSchema = new mongoose.Schema({
         type: Date,
         required: true,
     },
-    nid: {
-
-        type: String,
-        unique: true
-    },
     lastdoneted: {
         type: Date,
-        default: new Date('2020-01-01')
+        default: null
 
     },
     isAvailable: {

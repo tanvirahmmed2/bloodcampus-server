@@ -39,13 +39,15 @@ const Register = async (req, res) => {
     }
 
 
-    const existingUser = await User.findOne({ email: email });
+    const existingUser = await User.findOne({ $or: [{email: email}, {phone: phone}] });
     if (existingUser) {
       return res.status(409).send({
         success: false,
-        message: "Email already registered",
+        message: "User already registered",
       });
     }
+
+
 
     const dob = new Date(dateofbirth);
     const today = new Date();
@@ -93,7 +95,7 @@ const Register = async (req, res) => {
   } catch (error) {
     return res.status(500).send({
       success: false,
-      message: "Something went wrong",
+      message: "Failed to register",
       error: error.message,
     });
   }
@@ -330,6 +332,12 @@ const requestDonor = async (req, res) => {
         message: ' Enough resource not found'
       })
     }
+    if (donorId ===userId) {
+      return res.status(400).send({
+        success: false,
+        message: 'Select another profile'
+      })
+    }
     const user = await User.findById(userId)
     if (!user) {
       return res.status(400).send({
@@ -344,6 +352,7 @@ const requestDonor = async (req, res) => {
         message: 'Donor not found'
       })
     }
+    
     if (donor.bloodgroup !== user.bloodgroup) {
       return res.status(400).send({
         success: false,
@@ -351,9 +360,7 @@ const requestDonor = async (req, res) => {
       })
     }
 
-    const newRequest= {
-      
-    }
+    
 
   } catch (error) {
     return res.status(500).send({
@@ -364,6 +371,9 @@ const requestDonor = async (req, res) => {
   }
 
 }
+
+
+
 module.exports = {
   Register,
   getUser,
