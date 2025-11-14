@@ -1,5 +1,5 @@
 const express= require('express')
-const { getUser,  Register, Login, Logout, protectedUser, changeAvailabilty, changePassword } = require('../controllers/user.controller')
+const { getUser,  Register, Login, Logout, protectedUser, changeAvailabilty, changePassword, requestDonor } = require('../controllers/user.controller')
 const {isLogin} = require('../middleware/user.middleware')
 
 const userRouter= express.Router()
@@ -16,6 +16,7 @@ userRouter.get('/protected',isLogin, protectedUser)
 
 userRouter.post('/changeavailability', isLogin, changeAvailabilty)
 userRouter.post('/changepassword', isLogin, changePassword)
+userRouter.post('/request', isLogin, requestDonor)
 
 
 

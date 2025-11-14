@@ -319,6 +319,16 @@ const changePassword = async (req, res) => {
 
 }
 
+
+
+const requestDonor=async (req,res) => {
+  try {
+    
+  } catch (error) {
+    
+  }
+  
+}
 module.exports = {
   Register,
   getUser,
@@ -326,5 +336,6 @@ module.exports = {
   Logout,
   protectedUser,
   changeAvailabilty,
-  changePassword
+  changePassword,
+  requestDonor
 };
