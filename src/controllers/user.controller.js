@@ -621,6 +621,44 @@ const removeaccess = async (req, res) => {
 
 }
 
+
+const deletedUser = async (req, res) => {
+  try {
+    const { deleteUserEmail } = req.body
+    if (!deleteUserEmail) {
+      return res.status(400).send({
+        success: false,
+        message: 'Email not found'
+      });
+    }
+    const user = await User.findOne({ emai: deleteUserEmail })
+    if (!user) {
+      return res.status(400).send({
+        success: false,
+        message: 'User not found'
+      });
+    }
+    if (user.isAdmin) {
+      return res.status(400).send({
+        success: false,
+        message: 'Admin account can not be deleted'
+      });
+    }
+    await User.findOneAndDelete({ email: deleteUserEmail })
+    return res.status(200).send({
+      success: true,
+      message: 'Successfully Deleted User'
+    });
+  } catch (error) {
+    return res.status(500).send({
+      success: false,
+      message: 'Failed to delete user'
+    });
+
+  }
+
+}
+
 module.exports = {
   Register,
   getUser,
