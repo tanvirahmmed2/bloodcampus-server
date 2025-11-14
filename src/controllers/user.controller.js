@@ -659,6 +659,25 @@ const deleteUser = async (req, res) => {
 
 }
 
+
+const forgetpassword=async (req,res) => {
+  try {
+    
+  } catch (error) {
+    
+  }
+  
+}
+
+const resetPassword= async (req,res) => {
+  try {
+    
+  } catch (error) {
+    
+  }
+  
+}
+
 module.exports = {
   Register,
   getUser,
@@ -674,5 +693,8 @@ module.exports = {
   banuser,
   newaccess,
   removeaccess,
-  deleteUser
+  deleteUser,
+  forgetpassword,
+  resetPassword
+
 };

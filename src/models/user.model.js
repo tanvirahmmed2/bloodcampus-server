@@ -45,7 +45,7 @@ const userSchema = new mongoose.Schema({
     },
     isAvailable: {
         type: Boolean,
-        default: true,
+        default: false,
     },
     isBanned: {
         type: Boolean,
