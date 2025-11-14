@@ -39,7 +39,7 @@ const Register = async (req, res) => {
     }
 
 
-    const existingUser = await User.findOne({ $or: [{email: email}, {phone: phone}] });
+    const existingUser = await User.findOne({ $or: [{ email: email }, { phone: phone }] });
     if (existingUser) {
       return res.status(409).send({
         success: false,
@@ -332,7 +332,7 @@ const requestDonor = async (req, res) => {
         message: ' Enough resource not found'
       })
     }
-    if (donorId ===userId) {
+    if (donorId === userId) {
       return res.status(400).send({
         success: false,
         message: 'Select another profile'
@@ -352,7 +352,7 @@ const requestDonor = async (req, res) => {
         message: 'Donor not found'
       })
     }
-    
+
     if (donor.bloodgroup !== user.bloodgroup) {
       return res.status(400).send({
         success: false,
@@ -360,7 +360,26 @@ const requestDonor = async (req, res) => {
       })
     }
 
-    
+    const existRequest = donor.requests.find((req) => req.userId.toString() === userId)
+    if (existRequest) {
+      return res.status(400).send({
+        success: false,
+        message: 'Already requested, wait for call'
+      })
+    }
+
+    donor.requests.push({
+      userId,
+      name: user.name,
+      number: user.phone,
+      upazilla: user.upazilla,
+      message: 'I need blood, please help'
+    })
+    await donor.save()
+    return res.status(200).send({
+      success: true,
+      message: 'Successfully sent request'
+    })
 
   } catch (error) {
     return res.status(500).send({
@@ -373,6 +392,15 @@ const requestDonor = async (req, res) => {
 }
 
 
+const deleteRequest=async (req,res) => {
+  try {
+    
+  } catch (error) {
+    
+  }
+  
+}
+
 
 module.exports = {
   Register,
@@ -382,5 +410,6 @@ module.exports = {
   protectedUser,
   changeAvailabilty,
   changePassword,
-  requestDonor
+  requestDonor,
+  deleteRequest
 };

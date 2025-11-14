@@ -62,9 +62,10 @@ const userSchema = new mongoose.Schema({
     },
     requests: [
         {
+            userId:  { type: String, trim: true, required: true },
             name: { type: String, trim: true, required: true },
             number: { type: String, trim: true, required: true },
-            district: { type: String, trim: true, required: true },
+            upazilla: { type: String, trim: true, required: true },
             message: { type: String, trim: true, required: true },
         }
     ],
