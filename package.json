@@ -2,7 +2,6 @@
   "name": "bc-server",
   "version": "1.0.0",
   "description": "",
-  "main": "api/server.js",
   "scripts": {
     "start": "nodemon index.js"
   },
