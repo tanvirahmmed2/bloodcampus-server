@@ -142,8 +142,8 @@ const Login = async (req, res) => {
 
     const cookieOptions = {
       httpOnly: true,      // Prevents client-side JS from accessing the cookie
-      secure: false,         // Ensures cookie is sent only over HTTPS
-      sameSite: "lax",     // Required for cross-site cookies (like frontend ↔ backend on different domains)
+      secure: true,         // Ensures cookie is sent only over HTTPS
+      sameSite: "none",     // Required for cross-site cookies (like frontend ↔ backend on different domains)
       maxAge: 1000 * 60 * 60 * 24,
     };
 
@@ -173,8 +173,8 @@ const Logout = (req, res) => {
     }
     res.clearCookie("user_token", {
       httpOnly: true,      // Prevents client-side JS from accessing the cookie
-      secure: false,         // Ensures cookie is sent only over HTTPS
-      sameSite: "lax", //none for https and lax for local host
+      secure: true,         // Ensures cookie is sent only over HTTPS
+      sameSite: "none", //none for https and lax for local host
       path: "/",
     })
     return res.status(200).send({
