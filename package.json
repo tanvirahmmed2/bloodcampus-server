@@ -11,15 +11,18 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@getbrevo/brevo": "^3.0.1",
     "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
     "express": "^4.21.2",
     "http-errors": "^2.0.0",
+    "i": "^0.3.7",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.18.1",
     "nodemon": "^3.1.10",
+    "npm": "^11.6.2",
     "serverless-http": "^4.0.0"
   }
 }

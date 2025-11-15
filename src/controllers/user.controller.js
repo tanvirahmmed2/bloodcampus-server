@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken')
 
 const User = require("../models/user.model");
 const { JWT_SECRET } = require('../config/secure');
+const { sendMail } = require('../config/mailTransporter');
 
 
 const getUser = async (req, res) => {
@@ -660,23 +661,134 @@ const deleteUser = async (req, res) => {
 }
 
 
-const forgetpassword=async (req,res) => {
+const forgetpassword = async (req, res) => {
   try {
-    
-  } catch (error) {
-    
-  }
-  
-}
+    const { email } = req.body;
 
-const resetPassword= async (req,res) => {
-  try {
-    
+    // Validate email
+    if (!email) {
+      return res.status(400).send({
+        success: false,
+        message: 'Email not found'
+      });
+    }
+
+    // Find user
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).send({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Generate 6-digit token
+    const token = String(Math.floor(100000 + Math.random() * 900000));
+
+    // Expire after 10 minutes
+    const expireAt = Date.now() + 10 * 60 * 1000;
+
+    // Save token & expiry
+    user.resetToken = token;
+    user.tokenExpireAt = expireAt;
+    await user.save();
+
+    // Email content
+    const emailData = {
+      email,
+      subject: '🔐 Password Reset Code',
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 10px;">
+          <h2>Hello ${user.name || 'User'},</h2>
+          <p>Use the following code to reset your password. It expires in <b>60 minutes</b>.</p>
+          <h1 style="background: #f4f4f4; padding: 10px; border-radius: 5px; display: inline-block;">
+            ${token}
+          </h1>
+          <p>If you didn’t request this, please ignore this email.</p>
+          <br/>
+          <p>— Blood Campus</p>
+        </div>
+      `,
+    };
+
+    // Send email
+    await sendMail(emailData);
+
+    return res.status(200).send({
+      success: true,
+      message: 'Code has been sent to your email'
+    });
+
   } catch (error) {
-    
+    console.log(error);
+    return res.status(500).send({
+      success: false,
+      message: 'Failed to send code'
+    });
   }
-  
-}
+};
+
+const resetPassword = async (req, res) => {
+  try {
+    const { email, code, newpass } = req.body;
+
+    // Check required fields
+    if (!email || !code || !newpass) {
+      return res.status(400).send({
+        success: false,
+        message: 'Required data not found'
+      });
+    }
+
+    // Check user exists
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).send({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    // Check token
+    if (user.resetToken !== code) {
+      return res.status(400).send({
+        success: false,
+        message: 'Wrong token, try again'
+      });
+    }
+
+    // Check expiry
+    if (user.tokenExpireAt < Date.now()) {
+      return res.status(400).send({
+        success: false,
+        message: 'Code has expired, try again'
+      });
+    }
+
+    // Hash new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newpass, salt);
+
+    // Save new password
+    user.password = hashedPassword;
+    user.resetToken = null;       // clear token
+    user.tokenExpireAt = null;    // clear expiry
+    await user.save();
+
+    return res.status(200).send({
+      success: true,
+      message: 'Successfully changed password'
+    });
+
+  } catch (error) {
+    console.log(error);
+    return res.status(400).send({
+      success: false,
+      message: 'Failed to change password'
+    });
+  }
+};
+
 
 module.exports = {
   Register,
